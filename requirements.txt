@@ -1,0 +1,6 @@
+pandas
+prefect
+python-dotenv
+omega @ git+https://github.com/quant-science/omega.git
+qsresearch @ git+https://github.com/quant-science/QSResearch.git
+qsconnect @ git+https://github.com/quant-science/QSConnect.git
