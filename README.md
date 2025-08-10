@@ -12,6 +12,8 @@ This software is for educational purposes only. Use your paper trading account. 
 
 ## Install the latest with pip:
 
+> Note: When you install QSAutomate, all these files will be hidden in your installation path. You may want to consider simply downloading the package and using as a base to expand from rather that as a library.
+
 ``` bash
 pip install git+https://github.com/quant-science/QSAutomate.git
 ```
@@ -58,3 +60,81 @@ pip install git+https://github.com/quant-science/QSAutomate.git
 Here's how to find you account number from inside IB Trader Workstation. 
 
 ![image](https://github.com/quant-science/omega/assets/13734662/eba33283-ec31-4287-944f-4e9dff7cbe14)
+
+# 🏃 Quick start
+
+If you know what you're doing, navigate to `qsautomate/trading` and run the following command:
+
+```
+python qsmomentum.py
+```
+
+If you get an error, read on.
+
+# 🏁 Getting Set up
+
+## Running MLFlow
+
+MLFlow is the tool we use to track experiments. QSAutomate uses QSResearch to automate the end to end research process. As such, we want to make sure MLFlow is running to collect strategy diagnostics. The easiest way to start MLFlow is through the command line. Make sure you have your Quant Lab activiated and MLFlow installed.
+
+The minimum requirements:
+
+```bash
+mlflow server
+```
+
+To point to a common MLFlow directory where artifacts are stored:
+
+```bash
+mlflow server \
+  --port 8031 \
+  --backend-store-uri ~/.qsresearch/mlflow/runs \
+  --default-artifact-root ~/.qsresearch/mlflow/artifacts
+```
+
+This will start MLFlow and point to the directories based on the instructions for QSResearch. You will see some logging print out including the URL and port where the MLFlow server is listenting. If you followed the above instructions, it's here:
+
+[http://127.0.0.1:8031](http://127.0.0.1:8031)
+
+[You can find more options here.](https://mlflow.org/docs/latest/api_reference/cli.html#mlflow-server)
+
+## Running Prefect
+
+[Prefect](https://docs.prefect.io/v3/get-started) is an open-source orchestration engine that turns your Python functions into production-grade data pipelines with minimal friction. You can build and schedule workflows in pure Python—no DSLs or complex config files—and run them anywhere you can run Python. Prefect handles the heavy lifting for you out of the box: automatic state tracking, failure handling, real-time monitoring, and more.
+
+Start the local Prefect server in a new terminal window with your Quant Stack activated:
+
+```
+prefect server start
+```
+
+This will start Prefect. You will see some logging preint out including the URL and port where the Prefect server is listening. If you followed the above instructions, it's here:
+
+[http://127.0.0.1:4200/](http://127.0.0.1:4200/)
+
+# 💵 Using QSAutomate
+
+QSAutomate is actually a collection of _tasks_ and _flow_ that together orchestrate our end to end trading strategy. Here are the important directories:
+
+```
+QSAutomate/                                   - Project root
+├─ .env.example                                - Example environment variables
+├─ qsautomate/                                 - Main Python package
+│  ├─ backtest/                                - Backtesting runners/integration
+│  │  ├─ __init__.py                           - Subpackage marker
+│  │  └─ zipline_runner.py                     - Zipline-based backtest launcher
+│  ├─ data/                                    - Data ingestion and bundling
+│  │  ├─ bundle.py                             - Zipline data bundle registration/IO
+│  │  └─ fmp.py                                - Prefect tasks to fetch/store FMP data
+│  ├─ strategies/                              - Strategy definitions and artifacts
+│  │  ├─ __init__.py                           - Subpackage marker
+│  │  ├─ qsmomentum.py                         - Momentum strategy config/entrypoint
+│  ├─ trading/                                 - Live/exec utilities and portfolio ops
+│  │  ├─ __init__.py                           - Subpackage marker
+│  │  └─ rebalance.py                          - Portfolio rebalancing logic
+└─
+```
+
+> Note: When you install QSAutomate, all these files will be hidden in your installation path. You may want to consider simply downloading the package and using as a base to expand from rather that as a library.
+
+QSAutomate is designed to be run at the command line. The entry point are the files in the `strategies` folders (if you want to follow the convention). These files define the Prefect _flow_ which actually orchestrates the _tasks_.
