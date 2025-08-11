@@ -2,7 +2,7 @@
 
 Orchestration platform for algorithmic trading strategies with functionality for workflow automation, task scheduling, monitoring, and deployment.
 
-![tmp2dxb9bjw](https://github.com/user-attachments/assets/9e5b4e1b-ca89-4632-9c4f-8a0442c52e78)
+<img width="1631" height="1315" alt="Screenshot 2025-08-11 at 08 54 31" src="https://github.com/user-attachments/assets/1abed6ca-67f6-41e0-941d-c14abc9577c3" />
 
 # 🚨 Disclaimer
 
