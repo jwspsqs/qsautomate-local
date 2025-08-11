@@ -77,13 +77,7 @@ If you get an error, read on.
 
 MLFlow is the tool we use to track experiments. QSAutomate uses QSResearch to automate the end to end research process. As such, we want to make sure MLFlow is running to collect strategy diagnostics. The easiest way to start MLFlow is through the command line. Make sure you have your Quant Lab activiated and MLFlow installed.
 
-The minimum requirements:
-
-```bash
-mlflow server
-```
-
-To point to a common MLFlow directory where artifacts are stored:
+To point to a common MLFlow directory where artifacts are stored (recommended):
 
 ```bash
 mlflow server \
@@ -94,7 +88,7 @@ mlflow server \
 
 This will start MLFlow and point to the directories based on the instructions for QSResearch. You will see some logging print out including the URL and port where the MLFlow server is listenting. If you followed the above instructions, it's here:
 
-[http://127.0.0.1:8031](http://127.0.0.1:8031)
+`[http://127.0.0.1:8031](http://127.0.0.1:8031)`
 
 [You can find more options here.](https://mlflow.org/docs/latest/api_reference/cli.html#mlflow-server)
 
@@ -110,7 +104,23 @@ prefect server start
 
 This will start Prefect. You will see some logging preint out including the URL and port where the Prefect server is listening. If you followed the above instructions, it's here:
 
-[http://127.0.0.1:4200/](http://127.0.0.1:4200/)
+`[http://127.0.0.1:4200/](http://127.0.0.1:4200/)`
+
+## Viewing and cancelling _flows_
+
+You can review all flow runs in the UI available at the link above. If you want to cancel a _flow_ run, I find using the CLI is the most efficient.
+
+Step 1. List all flow runs.
+
+```prefect flow-run ls```
+
+You'll see a nice table print out with the ID, Flow, Name, State, and when it started. Copy the ID of the flow you want to cancel.
+
+Step 2. Cancel the flow run.
+
+```prefect flow-run cancel <FLOW_RUN_ID>```
+
+Prefect will schedule the flow run for cancellation.
 
 # 💵 Using QSAutomate
 
