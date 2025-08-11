@@ -1,7 +1,13 @@
 import logging
 from typing import Callable, Any
+import os
+import tempfile
+import shutil
+import uuid
+from prefect import task
 
-from prefect import flow, task
+
+logger = logging.getLogger(__name__)
 
 
 @task(
@@ -9,33 +15,41 @@ from prefect import flow, task
     description="Run Zipline backtest",
     tags=["backtest", "zipline"],
 )
-def run_backtest(config: dict, backtest_fcn: Callable) -> Any:
-    perf = backtest_fcn(config)
-    return perf
-
-
-@flow(
-    name="zipline-backtest-flow",
-    description="Flow to run Zipline backtest",
-)
-def main(config: dict, backtest_fcn: Callable) -> Any:
-    """Main flow to run Zipline backtest.
-
-    Args:
-        config: Configuration dictionary for the backtest
-        backtest_fcn: Function to run the backtest
-
-    Returns:
-        The performance results from the backtest
+def run_zipline_backtest(config: dict, backtest_fcn: Callable) -> Any:
     """
-    return run_backtest(config, backtest_fcn)
+    Run a Zipline backtest in a temporary working directory.
 
+    This function executes the provided backtest function (`backtest_fcn`) with the given configuration
+    dictionary (`config`) inside a temporary directory. The working directory is changed to the temporary
+    directory for the duration of the backtest, ensuring that any files written or read (such as config.pkl)
+    do not interfere with other processes or runs. After execution, the working directory is restored and
+    the temporary directory is cleaned up.
 
-if __name__ == "__main__":
-    from qsresearch.strategies.factor import run_backtest as run_backtest_fcn
-    from qsresearch.strategies.factor.config import CONFIG
+    Parameters
+    ----------
+    config : dict
+        The configuration dictionary to be passed to the backtest function. This typically contains all
+        parameters required to run the backtest, such as strategy settings, date ranges, and data sources.
+    backtest_fcn : Callable
+        The function to execute the backtest. It should accept a single argument (the config dictionary)
+        and return the result of the backtest.
 
-    main(
-        config=CONFIG,
-        backtest_fcn=run_backtest_fcn,
-    )
+    Returns
+    -------
+    Any
+        The result returned by the backtest function. The type depends on the implementation of `backtest_fcn`.
+
+    Notes
+    -----
+    - The function ensures isolation of file operations by running in a unique temporary directory.
+    - The temporary directory is deleted after the backtest completes, even if an exception occurs.
+    - This function is decorated as a Prefect task for orchestration in data pipelines.
+    """
+    original_cwd = os.getcwd()
+    tmpdir = tempfile.mkdtemp(prefix=f"bt_{uuid.uuid4().hex}_")
+    try:
+        os.chdir(tmpdir)
+        return backtest_fcn(config)  # qsresearch writes/reads config.pkl here safely
+    finally:
+        os.chdir(original_cwd)
+        shutil.rmtree(tmpdir, ignore_errors=True)
