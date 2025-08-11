@@ -18,7 +18,39 @@ logger = logging.getLogger(__name__)
 def execute_trades(
     bt_performance: pd.DataFrame, strategy_reference: str, client_id: int = 1, **kwargs
 ) -> None:
+    """
+    Execute trades to align the live portfolio with the target positions from a backtest.
 
+    This function compares the current account positions with the target positions from the
+    last row of a Zipline backtest performance DataFrame. It liquidates any positions that
+    are no longer in the target set and executes new trades as determined by the backtest
+    output. Orders are submitted using the Omega trading API.
+
+    Parameters
+    ----------
+    bt_performance : pandas.DataFrame
+        The Zipline backtest performance DataFrame. Must contain a 'positions' column,
+        where each entry is a list of dicts with at least a 'sid' key (whose 'symbol'
+        attribute gives the ticker).
+    strategy_reference : str
+        A string reference for the strategy, used as the order reference.
+    client_id : int, optional
+        The client ID for the Omega connection (default is 1).
+    **kwargs
+        Additional keyword arguments passed to the Omega constructor.
+
+    Returns
+    -------
+    None
+        This function executes trades as a side effect and does not return a value.
+
+    Notes
+    -----
+    - Positions not present in the target set are fully liquidated.
+    - New trades are generated using `omega_trades_from_zipline`.
+    - All orders are submitted with the provided `strategy_reference` as the order reference.
+    - Logging is used to record liquidation and trade execution actions.
+    """
     app = omega.Omega(client_id=client_id, **kwargs)
 
     # Get current account positions
