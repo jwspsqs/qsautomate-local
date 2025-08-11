@@ -18,7 +18,31 @@ logger = logging.getLogger(__name__)
     tags=["data", "fmp", "prices"],
 )
 def download_prices_fmp(start_date: dt.date, run_date: dt.date) -> None:
+    """
+    Download historical stock prices from FMP and store them in the database.
 
+    This function downloads historical price data for all US stocks (NASDAQ, NYSE) with a price above $5,
+    as well as selected benchmark ETFs (SPY, QQQ, IWM), for the specified date range. The data is cached
+    and then loaded into the database.
+
+    Parameters
+    ----------
+    start_date : datetime.date
+        The start date for the price data download (inclusive).
+    run_date : datetime.date
+        The end date for the price data download (inclusive).
+
+    Returns
+    -------
+    None
+        This function does not return a value. Data is stored in the database as a side effect.
+
+    Notes
+    -----
+    - Only stocks listed on NASDAQ and NYSE with a price greater than $5 are included.
+    - Benchmark ETFs (SPY, QQQ, IWM) are always included.
+    - Data is cached and then loaded into the database.
+    """
     logger.info(f"Downloading prices from FMP for {start_date} to {run_date}")
     client = Client()
     stock_list = client.stock_list("stock")
@@ -46,7 +70,7 @@ def download_prices_fmp(start_date: dt.date, run_date: dt.date) -> None:
     all_files = client.detect_cached_files()
     client.load_cached_files_to_database(
         all_files,
-        fresh=False,
+        fresh=True,
     )
 
 
@@ -58,6 +82,33 @@ def download_prices_fmp(start_date: dt.date, run_date: dt.date) -> None:
 def download_fundamentals_fmp(
     start_date: dt.date, run_date: dt.date, api_buffer_seconds: int = 10
 ) -> None:
+    """
+    Download and store fundamental financial statement data from FMP.
+
+    This function downloads bulk financial statements (income statement, balance sheet, cash flow statement, ratios)
+    for all available stocks for all periods between the specified years. It validates and deduplicates cached files,
+    and loads the data into the database.
+
+    Parameters
+    ----------
+    start_date : datetime.date
+        The start date for the data download. Only the year is used.
+    run_date : datetime.date
+        The end date for the data download. Only the year is used.
+    api_buffer_seconds : int, optional
+        Number of seconds to wait between API calls to avoid rate limits (default is 10).
+
+    Returns
+    -------
+    None
+        This function does not return a value. Data is stored in the database as a side effect.
+
+    Notes
+    -----
+    - Downloads all available periods for each statement type.
+    - Validates and deduplicates cached files before loading.
+    - Performs a full rebuild of the database with the new data.
+    """
     client = Client()
 
     statement_types = [
@@ -84,26 +135,10 @@ def download_fundamentals_fmp(
         start_year=start_date.year,
         end_year=run_date.year,
     )
-    client.detect_duplicate_cached_files(return_duplicates_only=True)
+    client.delete_duplicate_cached_files(dry_run=False)
 
     # Load data into database
     client.load_cached_files_to_database(
         cached_files_df=cached_files_df,
-        fresh=False,
-    )
-
-
-@flow(name="download-data", description="Download data from FMP")
-def main(start_date: dt.date, run_date: dt.date, api_buffer_seconds: int = 10) -> None:
-
-    download_prices_fmp(start_date, run_date),
-    download_fundamentals_fmp(start_date, run_date, api_buffer_seconds),
-
-
-if __name__ == "__main__":
-
-    main(
-        start_date=dt.date(2010, 1, 1),
-        run_date=dt.date(2025, 5, 13),
-        api_buffer_seconds=10,
+        fresh=True,  # Full rebuild
     )
