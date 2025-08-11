@@ -20,7 +20,29 @@ logger = logging.getLogger(__name__)
     tags=["data", "bundle"],
 )
 def build_zipline_bundle(bundle_name: str) -> None:
+    """
+    Build and ingest a Zipline data bundle from FMP database tables.
 
+    This function connects to the database, stages the necessary data for Zipline,
+    registers the bundle (if not already registered), and ingests the bundle for use
+    in Zipline backtests.
+
+    Parameters
+    ----------
+    bundle_name : str
+        The name of the Zipline bundle to register and ingest.
+
+    Returns
+    -------
+    None
+        This function does not return a value. The bundle is ingested as a side effect.
+
+    Notes
+    -----
+    - The function connects to the database and stages data using the `qsconnect.Client`.
+    - Duplicate bundle registration errors are avoided by catching `KeyError`.
+    - The ingested bundle will be available for Zipline backtests under the specified name.
+    """
     # Connect to DB and stage data
     client = Client()
     client.connect_to_database()
@@ -33,15 +55,3 @@ def build_zipline_bundle(bundle_name: str) -> None:
         pass
 
     bundles.ingest(bundle_name)
-
-
-@task(name="build-zipline-bundle", description="Build Zipline bundle")
-def main(bundle_name: str) -> None:
-    build_zipline_bundle(bundle_name)
-
-
-if __name__ == "__main__":
-
-    main(
-        bundle_name="historical_prices_fmp",
-    )
