@@ -64,31 +64,35 @@ def main(
     - The flow ensures all trade executions are complete before exiting.
     """
 
-    # --- 1. Submit concurrent data download tasks for prices and fundamentals ---
-    # These Prefect tasks are launched in parallel to fetch price and fundamental data for the given date range.
+    # Initiate the download of price data and fundamental data concurrently
     prices_f = download_prices_fmp.submit(start_date, run_date)
-    # fundamentals_f = download_fundamentals_fmp.submit(start_date, run_date)
+    fundamentals_f = download_fundamentals_fmp.submit(start_date, run_date)
 
-    # --- 2. Build the Zipline bundle after price data is available ---
-    # The bundle build task depends on the price data being ready, so it waits for prices_f to complete.
+    # Explicitly wait for the price data download task to complete before proceeding
+    prices_f.wait()
+    prices_f.result()
+
+    # Similarly, wait for the fundamental data download task to finish
+    fundamentals_f.wait()
+    fundamentals_f.result()
+
+    # Submit a task to build the Zipline bundle dependent on prices being available
     bundle_f = build_zipline_bundle.submit(bundle_name=bundle_name, wait_for=[prices_f])
 
-    # --- 3. Prepare for backtesting: wait for both bundle and fundamentals to be ready ---
-    # Both the bundle and fundamental data must be available before running any backtests.
-    # ready = [bundle_f, fundamentals_f]
-    ready = [bundle_f]
+    # Wait for the bundle build process to finish
+    bundle_f.wait()
+    bundle_f.result()
 
-    # --- 4. Launch multiple backtests in parallel, one for each strategy specification ---
-    # For each backtest configuration in the input list, submit a backtest task that waits for data readiness.
-    # Store the future, strategy reference, and client ID for later use.
-    bt_futures = []
-    for bt in backtests:
-        cfg = bt["config"]
-        bt_fcn = bt.get("backtest_fcn")
-        bt_future = run_zipline_backtest.submit(cfg, bt_fcn, wait_for=ready)
-        bt_futures.append(
-            (bt_future, bt.get("strategy_reference"), bt.get("client_id"))
+    # Prepare a list of dependencies that must be satisfied before running any backtests
+    ready = [bundle_f, fundamentals_f]
+
+    # For each backtest configuration provided, submit a Prefect task to run the backtest in parallel.
+    bt_futures = [
+        run_zipline_backtest.submit(
+            bt["config"], bt.get("backtest_fcn", run_backtest), wait_for=ready
         )
+        for bt in backtests
+    ]
 
     # --- 5. Execute trades for each backtest result in parallel ---
     # For each completed backtest, submit a trade execution task that waits for its corresponding backtest to finish.
