@@ -1,4 +1,5 @@
 import logging
+import copy
 import pandas as pd
 from prefect import flow
 from prefect.task_runners import ConcurrentTaskRunner
@@ -113,16 +114,16 @@ if __name__ == "__main__":
     # Update the backtest config to use the new start date
     qsmomentum_config["start_date"] = start_date
     qsmomentum_config["end_date"] = run_date
-    qsmomentum_config["mlflow_experiment_name"] = "QS Momentum Multi Parameter Test"
+    qsmomentum_config["mlflow_experiment_name"] = (
+        "QS Momentum Multi Parameter Test (Volume Top N)"
+    )
 
-    max_volatilities = [0.2, 0.25, 0.3, 0.35]
+    volume_top_ns = [250, 500, 1000, 1500, 2000, 2500, 3000]
     configs = []
-    for max_volatility in max_volatilities:
-        config = qsmomentum_config.copy()
-        config["preprocess"][0]["params"]["max_volatility"] = max_volatility
-        config["mlflow_run_name"] = (
-            f"qsmomentum_strategy_max_volatility_{max_volatility}"
-        )
+    for vtn in volume_top_ns:
+        config = copy.deepcopy(qsmomentum_config)
+        config["preprocess"][0]["params"]["volume_top_n"] = vtn
+        config["mlflow_run_name"] = f"qsmomentum_strategy_volume_top_n_{vtn}"
         configs.append(config)
 
     backtests = [
