@@ -1,9 +1,5 @@
 import logging
 from typing import Callable, Any
-import os
-import tempfile
-import shutil
-import uuid
 from prefect import task
 
 
@@ -45,11 +41,4 @@ def run_zipline_backtest(config: dict, backtest_fcn: Callable) -> Any:
     - The temporary directory is deleted after the backtest completes, even if an exception occurs.
     - This function is decorated as a Prefect task for orchestration in data pipelines.
     """
-    original_cwd = os.getcwd()
-    tmpdir = tempfile.mkdtemp(prefix=f"bt_{uuid.uuid4().hex}_")
-    try:
-        os.chdir(tmpdir)
-        return backtest_fcn(config)  # qsresearch writes/reads config.pkl here safely
-    finally:
-        os.chdir(original_cwd)
-        shutil.rmtree(tmpdir, ignore_errors=True)
+    return backtest_fcn(config)
