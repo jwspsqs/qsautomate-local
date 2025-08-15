@@ -45,8 +45,8 @@ def build_zipline_bundle(bundle_name: str) -> None:
     """
     # Connect to DB and stage data
     client = Client()
-    client.connect_to_database()
-    client.ingest_zipline_bundle_from_fmp_tables()
+    client.connect_to_database(read_only=True)
+    client.ingest_zipline_bundle_from_fmp_tables(bundle_name=bundle_name)
 
     # Avoid duplicate registration errors
     try:
