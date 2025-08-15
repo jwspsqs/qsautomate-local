@@ -10,48 +10,20 @@ This software is for educational purposes only. Use your paper trading account. 
 
 # ⬆️ Installation
 
-## Install the latest with pip:
+## Clone the repo and install the dependencies
 
 > Note: When you install QSAutomate, all these files will be hidden in your installation path. You may want to consider simply downloading the package and using as a base to expand from rather that as a library.
 
 ``` bash
-pip install git+https://github.com/quant-science/QSAutomate.git
+git clone git+https://github.com/quant-science/QSAutomate.git
 ```
 
-### Method 1: Using a Personal Access Token (PAT)
+Then navigate into the `QSAutomate` directory (which is now your working directory) and install the dependencies:
 
-1. **Generate a Personal Access Token**  
-   - Log into GitHub.  
-   - Go to **Settings** → **Developer Settings** → **Personal access tokens** → **Tokens (classic)** (or **Fine-grained tokens**).  
-   - Click **Generate new token**.  
-   - Grant the token at least the **repo** scope (for private repos) or the relevant fine-grained access permissions.
-
-2. **Use the Token in Your `pip install` Command**  
-   - Replace `<GITHUB_USERNAME>` and `<PERSONAL_ACCESS_TOKEN>` with your actual username and the token string:
-     ```bash
-     pip install git+https://<GITHUB_USERNAME>:<PERSONAL_ACCESS_TOKEN>@github.com/quant-science/QSAutomate.git
-     ```
-   - This embeds your credentials securely (as a token rather than a password).
-
-3. **Verify Repo Permissions**  
-   - Make sure you have been granted access to the private repository.  
-   - If you see a 404 or 403 error, confirm the token is valid and has the right scopes.
-
-### Method 2: Using SSH Keys
-
-1. **Generate SSH Keys (If Needed)**  
-   - On your local machine, generate a key pair (if you don’t already have one):
-     ```bash
-     ssh-keygen -t ed25519 -C "your_email@example.com"
-     ```
-   - Copy the public key (e.g., from `~/.ssh/id_ed25519.pub`) to your GitHub **SSH and GPG keys** settings.
-
-2. **Install via SSH**  
-   - Use the SSH URL in your `pip install` command:
-     ```bash
-     pip install git+ssh://git@github.com/quant-science/omega.git
-     ```
-   - No token or password required.
+```
+pip install -r requirements.txt
+```
+You can now use the `QSAutomate` directory as your working directory.
 
 # 💸 Paper Trading Account
 
