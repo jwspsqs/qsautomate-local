@@ -114,3 +114,9 @@ QSAutomate/                                   - Project root
 ```
 
 QSAutomate is designed to be run at the command line. The entry point are the files in the `strategies` folders (if you want to follow the convention). These files define the Prefect _flow_ which actually orchestrates the _tasks_.
+
+# 🚨 Some Gotchas
+
+Issue: I'm getting an error that says data for my benchmark symbol is not available.
+Explanation: You have a cached Zipline bundle that has market data that starts after the start date of your backtest.
+Solution: Delete the directories in `~/.zipline/data/historical_prices_fmp` and rerun the bundling process.
