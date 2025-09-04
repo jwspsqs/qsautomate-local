@@ -10,6 +10,12 @@ This software is for educational purposes only. Use your paper trading account. 
 
 # ⬆️ Installation
 
+## Fast Installation
+
+``` bash
+pip install git+https://github.com/quant-science/QSAutomate.git 
+```
+
 ## Clone the repo and install the dependencies
 
 > Note: When you install QSAutomate, all these files will be hidden in your installation path. You may want to consider simply downloading the package and using as a base to expand from rather that as a library.
