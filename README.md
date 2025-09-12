@@ -15,7 +15,7 @@ This software is for educational purposes only. Use your paper trading account. 
 > Note: QSAutomate is not designed to be installed like other libraries. It is a collection of files and directories you can use as the foundation for your algorithmic trading strategies. This makes installation even easier.
 
 ``` bash
-git clone git+https://github.com/quant-science/QSAutomate.git
+git clone https://github.com/quant-science/QSAutomate.git
 ```
 
 Then navigate into the `QSAutomate` directory (which is now your working directory) and install the dependencies:
