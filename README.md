@@ -115,13 +115,13 @@ QSAutomate/                                   - Project root
 
 QSAutomate is designed to be run at the command line. The entry point are the files in the `strategies` folders (if you want to follow the convention). These files define the Prefect _flow_ which actually orchestrates the _tasks_.
 
-# 🔥 Using QSAutomate with QuantVPS
+# 🔥 Using QSAutomate with QuantVPS ([students get 15% off for life](https://go.quantvps.com/quantscience))
 
 QuantVPS is a Virtual Private Server (VPS) provider designed specifically for algorithmic and high-frequency trading. Their servers are colocated near the Chicago Mercantile Exchange (CME), which helps reduce latency and slippage when trading futures. QuantVPS also provides trading-focused features such as NVMe storage, high-performance CPUs, and 24/7 support, with compatibility for platforms like NinjaTrader, MetaTrader, and TradeStation.
 
 We’ve partnered with QuantVPS to provide complete, ready-to-use environments so you can run your algorithmic trading strategies without setup headaches.
 
-Our students enjoy a 15% discount on any VPS for life.
+[Our students enjoy a 15% discount on any VPS for life](https://go.quantvps.com/quantscience).
 
 When you sign up, your virtual private server comes preinstalled with:
 
