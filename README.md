@@ -115,8 +115,86 @@ QSAutomate/                                   - Project root
 
 QSAutomate is designed to be run at the command line. The entry point are the files in the `strategies` folders (if you want to follow the convention). These files define the Prefect _flow_ which actually orchestrates the _tasks_.
 
-# 🚨 Some Gotchas
+# 🔥 Using QSAutomate with QuantVPS
 
-Issue: I'm getting an error that says data for my benchmark symbol is not available.
-Explanation: You have a cached Zipline bundle that has market data that starts after the start date of your backtest.
-Solution: Delete the directories in `~/.zipline/data/historical_prices_fmp` and rerun the bundling process.
+QuantVPS is a Virtual Private Server (VPS) provider designed specifically for algorithmic and high-frequency trading. Their servers are colocated near the Chicago Mercantile Exchange (CME), which helps reduce latency and slippage when trading futures. QuantVPS also provides trading-focused features such as NVMe storage, high-performance CPUs, and 24/7 support, with compatibility for platforms like NinjaTrader, MetaTrader, and TradeStation.
+
+We’ve partnered with QuantVPS to provide complete, ready-to-use environments so you can run your algorithmic trading strategies without setup headaches.
+
+Our students enjoy a 15% discount on any VPS for life.
+
+When you sign up, your virtual private server comes preinstalled with:
+
+1. Trader Workstation (version 10.40 Stable)
+2. Visual Studio Code (VSCode) with the Dev Containers extension  
+3. Docker Desktop (Docker will start when you log in)
+4. Git for Windows (configured through the `bash` shell)
+
+All apps can be accessed through links on the desktop.
+
+In addition to a fully configured trading environment, you can run your strategies inside **Dev Containers**.
+
+Dev Containers are portable development environments defined by a configuration file (`devcontainer.json`). This file specifies the tools, runtimes, extensions, and settings you need. Dev Containers run inside Docker, ensuring consistent environments across machines and teams. This removes the classic “works on my machine” problem by standardizing dependencies and workflows.
+
+That means it’s easier than ever to get the **Quant Scientist Stack** running with all required Python libraries:
+
+1. No more dependency issues  
+2. No more GitHub login problems  
+3. No more outdated libraries  
+4. No more mismatched Python versions  
+5. No more missing system packages (like libxml, gcc, etc.)  
+6. No more inconsistent IDE setups—extensions and settings are shared  
+7. No more “works on Linux but not on Windows/Mac” problems  
+8. No more manual environment setup—everything is defined in code  
+
+### Setup Steps
+
+1. [Log into](https://www.quantvps.com/login) your QuantVPS virtual private server.  
+2. Set up your [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) (PAT) and **copy it**.  
+3. Open **Git Bash** from the desktop shortcut and clone the `QSAutomate` repository to the desktop:  
+
+```bash
+$ cd Desktop
+$ git clone https@github.com:quant-science/QSAutomate.git
+```
+
+When prompted, complete the sign in process.  
+
+4. Open the `QSAutomate` folder in VSCode.  
+5. Rename `.env.example` to `.env`.  
+6. Add your FMP API key and GitHub Personal Access Token to the `.env` file.  
+7. Open the Dev Container in VSCode.  
+
+VSCode will automatically detect the `devcontainer.json` file and ask that you open the current directory remotely. If you do not see this option, click the little blue `><` icon in the bottom left corner of the window. From there, select Open Folder in Container from the Command Pallet. Once selected, open the `QSAutomate` directory from the popup and the `devcontainer.json` file from the COmmand Pallet.
+
+The first time you do this, it will take about five minutes to set everything up. After that it takes about five seconds.
+
+At this point, the entire Quant Scientist Stack is installed and ready to use.
+
+This includes:
+
+- Omega  
+- QSConnect  
+- QSResearch  
+- Zipline Reloaded  
+- Pyfolio Reloaded  
+- Alphalens Reloaded  
+- XGBoost  
+- and more...  
+
+---
+
+## Running Omega
+
+When using Omega, Docker networking automatically forwards the connection to the instance of Trader Workstation running on the host. This means you’ll need to create your Omega trading apps using the internal hostname defined during the container build.
+
+It sounds complex, but it’s simple in practice. Use this pattern:
+
+```python
+>>> import omega
+>>> app = omega.Omega(host="host.docker.internal")
+```
+
+Before creating your Omega app, make sure Trader Workstation is running on the `host` computer. (In other words, double click the TWS icon on the desktop and sign in.)
+
+With this setup, Omega seamlessly connects to Trader Workstation through Docker, letting you focus on building and testing your trading strategies.
