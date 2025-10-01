@@ -182,9 +182,7 @@ This includes:
 - XGBoost  
 - and more...  
 
----
-
-## Running Omega
+## Running Omega in a Dev Container
 
 When using Omega, Docker networking automatically forwards the connection to the instance of Trader Workstation running on the host. This means you’ll need to create your Omega trading apps using the internal hostname defined during the container build.
 
