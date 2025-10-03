@@ -25,7 +25,7 @@
         "GW_PORT_PAPER": "4002"
     },
     "hostRequirements": {
-        "memory": "12gb"
+        "memory": "6gb"
     },
     "customizations": {
         "vscode": {
