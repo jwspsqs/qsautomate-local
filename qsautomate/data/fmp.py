@@ -66,13 +66,6 @@ def download_prices_fmp(start_date: dt.date, run_date: dt.date) -> None:
         api_calls_per_minute=2900,
     )
 
-    # Store data in database
-    all_files = client.detect_cached_files()
-    client.load_cached_files_to_database(
-        all_files,
-        fresh=True,
-    )
-
 
 @task(
     name="download-fundamentals-fmp",
@@ -127,18 +120,21 @@ def download_fundamentals_fmp(
         api_buffer_seconds=api_buffer_seconds,
     )
 
-    # Validate cached files
-    cached_files_df = client.detect_cached_files()
-    client.detect_missing_cached_files(
-        statement_type=statement_types,
-        periods="all",
-        start_year=start_date.year,
-        end_year=run_date.year,
-    )
-    client.delete_duplicate_cached_files(dry_run=False)
 
-    # Load data into database
+@task(
+    name="build-datalake-fmp",
+    description="Cache downloaded files from FMP into DuckDB",
+    tags=["data", "fmp", "fundamentals"],
+)
+def build_datalake_fmp() -> None:
+
+    client = Client()
+
+    # Store in a new database instance (destroys existing database)
+    cached_files = client.detect_cached_files()
     client.load_cached_files_to_database(
-        cached_files_df=cached_files_df,
-        fresh=True,  # Full rebuild
+        cached_files,
+        fresh=True,
     )
+
+    client.delete_cached_files(cached_files_df=cached_files)
