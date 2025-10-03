@@ -1,6 +1,19 @@
 {
     "jupyter.notebookFileRoot": "${workspaceFolder}",
+    // ensure all terminals (not just Windows) see the repo root
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
     "terminal.integrated.env.windows": {
         "PYTHONPATH": "${workspaceFolder}"
     },
+    // help language server & debugger resolve imports
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    // have Python extension load env vars from .env at launch (debugger, tests, notebooks)
+    "python.envFile": "${workspaceFolder}/.env"
 }
