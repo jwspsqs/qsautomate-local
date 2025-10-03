@@ -4,7 +4,7 @@ from prefect import task
 import pandas as pd
 
 import omega
-from omega import MarketOrder, Stock
+from omega import MarketOrder, Stock, start_loop
 from omega.utils.zipline_utils import omega_trades_from_zipline
 
 logger = logging.getLogger(__name__)
@@ -16,10 +16,16 @@ logger = logging.getLogger(__name__)
     tags=["trading", "rebalance"],
 )
 def execute_trades(
-    bt_performance: pd.DataFrame, strategy_reference: str, client_id: int = 1, **kwargs
+    bt_performance: pd.DataFrame,
+    strategy_reference: str,
+    client_id: int = 1,
+    host: str = "127.0.0.1",
+    **kwargs,
 ) -> None:
 
-    app = omega.Omega(client_id=client_id, **kwargs)
+    start_loop()
+
+    app = omega.Omega(client_id=client_id, host=host, **kwargs)
 
     # Get current account positions
     positions = app.positions_as_symbols()

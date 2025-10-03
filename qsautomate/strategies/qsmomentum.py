@@ -25,7 +25,8 @@ def main(
     backtest_fcn: Callable,
     bundle_name: str,
     strategy_reference: str,
-    client_id: int = 1,
+    client_id: int,
+    host: str,
 ) -> None:
 
     # Initiate the download of price data and fundamental data concurrently
@@ -60,7 +61,7 @@ def main(
 
     # Execute trades for the backtest result
     trade_f = execute_trades.submit(
-        perf_f, strategy_reference, client_id=client_id, wait_for=[perf_f]
+        perf_f, strategy_reference, client_id=client_id, host=host, wait_for=[perf_f]
     )
 
     trade_f.wait()
@@ -80,6 +81,7 @@ if __name__ == "__main__":
     bundle_name = "historical_prices_fmp"
     strategy_reference = strategy_config.get("mlflow_experiment_name", "qsmomentum")
     client_id = 1
+    host = "host.docker.internal"
 
     main(
         start_date=start_date,
@@ -89,4 +91,5 @@ if __name__ == "__main__":
         bundle_name=bundle_name,
         strategy_reference=strategy_reference,
         client_id=client_id,
+        host=host,
     )
