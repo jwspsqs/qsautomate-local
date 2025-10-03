@@ -33,3 +33,4 @@ RUN export $(cat .env | grep -v '^#' | xargs) && \
 
 # Create MLflow directories
 RUN mkdir -p ~/.qsresearch/mlflow
+RUN prefect config set PREFECT_UI_STATIC_DIRECTORY=~/.prefect/ui
