@@ -5,11 +5,12 @@
         "context": "..",
         "target": "base"
     },
+    "remoteUser": "root",
     // Only forward container services you actually expose (e.g., Jupyter).
     "forwardPorts": [
-        5000,
-        8888,
-        4200
+        5000, // MLFlow
+        8888, // Jupyter
+        4200 // Prefect
     ],
     // Make the host reachable from the Linux container and load .env file
     "runArgs": [
