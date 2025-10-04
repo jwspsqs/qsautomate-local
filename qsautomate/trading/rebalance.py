@@ -57,3 +57,5 @@ def execute_trades(
                 order.total_quantity,
                 order_ref=strategy_reference,
             )
+
+    app.disconnect()
