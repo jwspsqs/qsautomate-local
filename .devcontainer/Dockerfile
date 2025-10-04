@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/python:1-3.12-bullseye as base
+FROM mcr.microsoft.com/devcontainers/python:1-3.12-bullseye as base
 
 RUN touch /etc/apt/sources.list.d/amd64.list
 RUN dpkg --add-architecture amd64
@@ -33,4 +33,3 @@ RUN export $(cat .env | grep -v '^#' | xargs) && \
 
 # Create MLflow directories
 RUN mkdir -p ~/.qsresearch/mlflow
-RUN prefect config set PREFECT_UI_STATIC_DIRECTORY=~/.prefect/ui
