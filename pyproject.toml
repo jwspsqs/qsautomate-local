@@ -7,11 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "ipykernel",
     "jupyter",
-    "ruff",
-    "pandas>=2.3.3",
-    "python-dotenv>=1.1.1",
-    "prefect>=3.4.22",
-    "mlflow>=3.4.0",
+    "prefect",
     "omega @ git+https://github.com/quant-science/omega.git",
     "qsresearch @ git+https://github.com/quant-science/QSResearch.git",
     "qsconnect @ git+https://github.com/quant-science/QSConnect.git",
