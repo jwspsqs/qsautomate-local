@@ -53,6 +53,7 @@ To point to a common MLFlow directory where artifacts are stored (recommended):
 
 ```bash
 mlflow server \
+  --port 8031 \
   --backend-store-uri ~/.qsresearch/mlflow/runs \
   --default-artifact-root ~/.qsresearch/mlflow/artifacts
 ```
