@@ -35,7 +35,7 @@ Here's how to find you account number from inside IB Trader Workstation.
 
 # 🏃 Quick start
 
-If you know what you're doing, navigate to `qsautomate/trading` and run the following command:
+If you know what you're doing, navigate to `qsautomate/strategies` and run the following command:
 
 ```
 python qsmomentum.py
