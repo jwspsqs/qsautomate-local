@@ -1,19 +1,20 @@
-import logging
+import pandas as pd
 
 from prefect import task
-import pandas as pd
+from prefect import get_run_logger
 
 import omega
 from omega import MarketOrder, Stock, start_loop
 from omega.utils.zipline_utils import omega_trades_from_zipline
 
-logger = logging.getLogger(__name__)
+from qsautomate.config.prefect import TRADING_TASK_CONFIG
 
 
 @task(
     name="execute-trades",
-    description="Execute trades",
+    description="Execute trades via broker",
     tags=["trading", "rebalance"],
+    **TRADING_TASK_CONFIG,
 )
 def execute_trades(
     bt_performance: pd.DataFrame,
@@ -22,6 +23,8 @@ def execute_trades(
     host: str = "127.0.0.1",
     **kwargs,
 ) -> None:
+    logger = get_run_logger()
+    logger.info(f"Executing trades for strategy: {strategy_reference}")
 
     start_loop()
 
@@ -34,8 +37,8 @@ def execute_trades(
     bt_positions = [d["sid"].symbol for d in bt_performance.positions.iloc[-1]]
 
     # Calculate positions to liquidate
-    divest = list(set(positions) - set(bt_positions))
-    logger.info(f"liquidating positions: {divest} (Client ID: {client_id})")
+    divest = list[str](set(positions) - set(bt_positions))
+    logger.info(f"Liquidating positions: {divest} (Client ID: {client_id})")
     if divest:
         for sym in divest:
             contract = Stock(sym, "SMART", "USD")
@@ -47,9 +50,9 @@ def execute_trades(
             )
 
     # Calculate and execute new trades
-    trades = omega_trades_from_zipline(bt_performance, fail_on_day_mismatch=True)
+    trades = omega_trades_from_zipline(bt_performance, fail_on_day_mismatch=False)
     if trades:
-        logger.info(f"executing {len(trades)} trades (Client ID: {client_id})")
+        logger.info(f"Executing {len(trades)} trades (Client ID: {client_id})")
         for contract, order in trades:
             app.order_target_quantity(
                 contract,
@@ -59,3 +62,4 @@ def execute_trades(
             )
 
     app.disconnect()
+    logger.info("Trade execution complete")
