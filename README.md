@@ -10,20 +10,23 @@ This software is for educational purposes only. Use your paper trading account. 
 
 # ⬆️ Installation
 
-## Clone the repo and install the dependencies
+## Install uv
 
-> Note: QSAutomate is not designed to be installed like other libraries. It is a collection of files and directories you can use as the foundation for your algorithmic trading strategies. This makes installation even easier.
+If you don't have uv installed:
 
-``` bash
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+## Clone and install
+
+```bash
 git clone https://github.com/quant-science/QSAutomate.git
+cd QSAutomate
+uv sync
 ```
 
-Then navigate into the `QSAutomate` directory (which is now your working directory) and install the dependencies:
-
-```
-pip install -r requirements.txt
-```
-You can now use the `QSAutomate` directory as your working directory.
+This creates a `.venv` directory, installs all dependencies, and installs QSAutomate in editable mode.
 
 # 💸 Paper Trading Account
 
