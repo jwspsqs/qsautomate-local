@@ -1,9 +1,13 @@
-import pandas as pd
 import copy
-from prefect import flow
 
+import pandas as pd
+from dotenv import load_dotenv
 from typing import Callable
 
+from prefect import flow
+from prefect.futures import wait
+
+from qsautomate.config.prefect import FLOW_CONFIG
 from qsautomate.data.fmp import (
     download_prices_fmp,
     download_fundamentals_fmp,
@@ -16,8 +20,15 @@ from qsautomate.trading.rebalance import execute_trades
 from qsresearch.strategies.factor import run_backtest
 from qsresearch.strategies.factor.config import CONFIG
 
+# Load environment variables once at entry point
+load_dotenv()
 
-@flow(name="qsmomentum", description="Run QS Momentum strategy")
+
+@flow(
+    name="qsmomentum",
+    description="Run QS Momentum strategy",
+    **FLOW_CONFIG,
+)
 def main(
     start_date: pd.Timestamp,
     run_date: pd.Timestamp,
@@ -28,61 +39,39 @@ def main(
     client_id: int,
     host: str,
 ) -> None:
+    # Download data in parallel
+    prices_future = download_prices_fmp.submit(start_date, run_date)
+    fundamentals_future = download_fundamentals_fmp.submit(start_date, run_date)
+    wait([prices_future, fundamentals_future])
 
-    # Initiate the download of price data and fundamental data concurrently
-    prices_f = download_prices_fmp.submit(start_date, run_date)
-    fundamentals_f = download_fundamentals_fmp.submit(start_date, run_date)
-
-    # Explicitly wait for the price data download task to complete before proceeding
-    prices_f.wait()
-    prices_f.result()
-
-    # Similarly, wait for the fundamental data download task to finish
-    fundamentals_f.wait()
-    fundamentals_f.result()
-
-    build_datalake_f = build_datalake_fmp.submit(wait_for=[prices_f, fundamentals_f])
-
-    # Submit a task to build the Zipline bundle dependent on prices being available
-    bundle_f = build_zipline_bundle.submit(
-        bundle_name=bundle_name, wait_for=[build_datalake_f]
-    )
-
-    # Wait for the bundle build process to finish
-    bundle_f.wait()
-    bundle_f.result()
-
-    # Submit a task to run the backtest dependent on the bundle being ready
-    perf_f = run_zipline_backtest.submit(config, backtest_fcn, wait_for=[bundle_f])
-
-    # Wait for the backtest to finish
-    perf_f.wait()
-    perf_f.result()
-
-    # Execute trades for the backtest result
-    trade_f = execute_trades.submit(
-        perf_f, strategy_reference, client_id=client_id, host=host, wait_for=[perf_f]
-    )
-
-    trade_f.wait()
-    trade_f.result()
+    # Sequential pipeline - direct calls, Prefect handles dependencies
+    build_datalake_fmp()
+    build_zipline_bundle(bundle_name)
+    perf = run_zipline_backtest(config, backtest_fcn)
+    execute_trades(perf, strategy_reference, client_id=client_id, host=host)
 
 
 if __name__ == "__main__":
-
-    start_date = pd.Timestamp(2024, 1, 1)
+    # Set the start and end date
+    start_date = pd.Timestamp(2024, 1, 5)
     run_date = pd.Timestamp.today().normalize()
 
+    # Update the strategy config with the current dates
     strategy_config = copy.deepcopy(CONFIG)
     strategy_config["start_date"] = start_date
     strategy_config["end_date"] = run_date
 
+    # Grab the backtest function and update the strategy reference
     backtest_fcn = run_backtest
     bundle_name = "historical_prices_fmp"
     strategy_reference = strategy_config.get("mlflow_experiment_name", "qsmomentum")
     client_id = 1
-    host = "host.docker.internal"
 
+    # Uncomment if running Dev Containers
+    # host = "host.docker.internal"
+    host = "127.0.0.1"
+
+    # Run the end to end strategy
     main(
         start_date=start_date,
         run_date=run_date,
