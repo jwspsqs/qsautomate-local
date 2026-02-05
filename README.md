@@ -83,6 +83,16 @@ Cancel a flow run:
 uv run prefect flow-run cancel <FLOW_RUN_ID>
 ```
 
+## Prefect Configuration
+
+Enable result persistence for task caching:
+
+```bash
+uv run prefect config set PREFECT_RESULTS_PERSIST_BY_DEFAULT=true
+```
+
+This allows tasks to cache their results and skip re-execution when inputs haven't changed.
+
 # 💵 Using QSAutomate
 
 QSAutomate is actually a collection of _tasks_ and _flow_ that together orchestrate our end to end trading strategy. Here are the important directories:
