@@ -5,10 +5,13 @@ description = "Automate Algorithmic Trading Systems"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "ipykernel",
-    "jupyter",
     "prefect",
+    "mlflow",
     "omega @ git+https://github.com/quant-science/omega.git",
     "qsresearch @ git+https://github.com/quant-science/QSResearch.git",
     "qsconnect @ git+https://github.com/quant-science/QSConnect.git",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
