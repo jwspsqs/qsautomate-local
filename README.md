@@ -38,13 +38,11 @@ Here's how to find you account number from inside IB Trader Workstation.
 
 # 🏃 Quick start
 
-If you know what you're doing, navigate to `qsautomate/strategies` and run the following command:
+Run the momentum strategy:
 
+```bash
+uv run python qsautomate/strategies/qsmomentum.py
 ```
-python qsmomentum.py
-```
-
-If you get an error, read on.
 
 # 🏁 Getting Set up
 
