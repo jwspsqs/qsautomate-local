@@ -3,7 +3,7 @@ name = "QSAutomate"
 version = "0.1.0"
 description = "Automate Algorithmic Trading Systems"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11, <3.12"
 dependencies = [
     "prefect",
     "mlflow",
@@ -15,3 +15,6 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
