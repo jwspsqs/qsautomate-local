@@ -63,33 +63,27 @@ Access MLFlow at: [http://127.0.0.1:8031](http://127.0.0.1:8031)
 
 ## Running Prefect
 
-[Prefect](https://docs.prefect.io/v3/get-started) is an open-source orchestration engine that turns your Python functions into production-grade data pipelines with minimal friction. You can build and schedule workflows in pure Python—no DSLs or complex config files—and run them anywhere you can run Python. Prefect handles the heavy lifting for you out of the box: automatic state tracking, failure handling, real-time monitoring, and more.
+[Prefect](https://docs.prefect.io/v3/get-started) is an open-source orchestration engine. Start it in a new terminal:
 
-Start the local Prefect server in a new terminal window with your Quant Stack activated:
-
-```
-prefect server start
+```bash
+uv run prefect server start
 ```
 
-This will start Prefect. You will see some logging preint out including the URL and port where the Prefect server is listening. If you followed the above instructions, it's here:
+Access Prefect at: [http://127.0.0.1:4200](http://127.0.0.1:4200)
 
-[http://127.0.0.1:4200/](http://127.0.0.1:4200/)
+## Viewing and cancelling flows
 
-## Viewing and cancelling _flows_
+List all flow runs:
 
-You can review all flow runs in the UI available at the link above. If you want to cancel a _flow_ run, I find using the CLI is the most efficient.
+```bash
+uv run prefect flow-run ls
+```
 
-Step 1. List all flow runs.
+Cancel a flow run:
 
-```prefect flow-run ls```
-
-You'll see a nice table print out with the ID, Flow, Name, State, and when it started. Copy the ID of the flow you want to cancel.
-
-Step 2. Cancel the flow run.
-
-```prefect flow-run cancel <FLOW_RUN_ID>```
-
-Prefect will schedule the flow run for cancellation.
+```bash
+uv run prefect flow-run cancel <FLOW_RUN_ID>
+```
 
 # 💵 Using QSAutomate
 
