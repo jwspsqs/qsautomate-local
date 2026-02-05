@@ -30,7 +30,8 @@ load_dotenv()
     **FLOW_CONFIG,
 )
 def main(
-    start_date: pd.Timestamp,
+    data_start_date: pd.Timestamp,
+    backtest_start_date: pd.Timestamp,
     run_date: pd.Timestamp,
     config: dict,
     backtest_fcn: Callable,
@@ -39,9 +40,9 @@ def main(
     client_id: int,
     host: str,
 ) -> None:
-    # Download data in parallel
-    prices_future = download_prices_fmp.submit(start_date, run_date)
-    fundamentals_future = download_fundamentals_fmp.submit(start_date, run_date)
+    # Download data in parallel (uses data_start_date for full history)
+    prices_future = download_prices_fmp.submit(data_start_date, run_date)
+    fundamentals_future = download_fundamentals_fmp.submit(data_start_date, run_date)
     wait([prices_future, fundamentals_future])
 
     # Sequential pipeline - direct calls, Prefect handles dependencies
@@ -52,13 +53,15 @@ def main(
 
 
 if __name__ == "__main__":
-    # Set the start and end date
-    start_date = pd.Timestamp(2024, 1, 5)
-    run_date = pd.Timestamp.today().normalize()
+    # Set dates: data_start_date must be far enough back to support window_length lookback
+    # window_length is 756 trading days (3 years), so data needs to start ~3 years before backtest
+    data_start_date = pd.Timestamp(2021, 1, 4)
+    backtest_start_date = pd.Timestamp(2024, 1, 5)
+    run_date = pd.Timestamp(2026, 2, 4)
 
     # Update the strategy config with the current dates
     strategy_config = copy.deepcopy(CONFIG)
-    strategy_config["start_date"] = start_date
+    strategy_config["start_date"] = backtest_start_date
     strategy_config["end_date"] = run_date
 
     # Grab the backtest function and update the strategy reference
@@ -73,7 +76,8 @@ if __name__ == "__main__":
 
     # Run the end to end strategy
     main(
-        start_date=start_date,
+        data_start_date=data_start_date,
+        backtest_start_date=backtest_start_date,
         run_date=run_date,
         config=strategy_config,
         backtest_fcn=backtest_fcn,
