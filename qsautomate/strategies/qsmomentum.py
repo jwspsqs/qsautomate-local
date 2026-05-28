@@ -55,9 +55,9 @@ def main(
 if __name__ == "__main__":
     # Set dates: data_start_date must be far enough back to support window_length lookback
     # window_length is 756 trading days (3 years), so data needs to start ~3 years before backtest
-    data_start_date = pd.Timestamp(2021, 1, 4)
-    backtest_start_date = pd.Timestamp(2024, 1, 5)
-    run_date = pd.Timestamp(2026, 5, 22)
+    data_start_date = pd.Timestamp(2021, 1, 4)      #REVIEW
+    backtest_start_date = pd.Timestamp(2024, 1, 5)  #REVIEW
+    run_date = pd.Timestamp(2026, 5, 22)            #REVIEW
 
     # Update the strategy config with the current dates
     strategy_config = copy.deepcopy(CONFIG)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Uncomment if running Dev Containers
     host = "host.docker.internal"
-    # host = "127.0.0.1"
+    # host = "127.0.0.1"            #Only for non-docker environments
 
     # Run the end to end strategy
     main(
