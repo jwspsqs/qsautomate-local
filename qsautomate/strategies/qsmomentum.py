@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # window_length is 756 trading days (3 years), so data needs to start ~3 years before backtest
     data_start_date = pd.Timestamp(2021, 1, 4)
     backtest_start_date = pd.Timestamp(2024, 1, 5)
-    run_date = pd.Timestamp(2026, 2, 4)
+    run_date = pd.Timestamp(2026, 5, 22)
 
     # Update the strategy config with the current dates
     strategy_config = copy.deepcopy(CONFIG)
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     client_id = 1
 
     # Uncomment if running Dev Containers
-    # host = "host.docker.internal"
-    host = "127.0.0.1"
+    host = "host.docker.internal"
+    # host = "127.0.0.1"
 
     # Run the end to end strategy
     main(
